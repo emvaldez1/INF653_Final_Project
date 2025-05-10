@@ -34,4 +34,3 @@ router.route('/:state/population')
 router.route('/:state/admission')
   .get(verifyState, statesController.getAdmission);
 
-module.exports = router;
