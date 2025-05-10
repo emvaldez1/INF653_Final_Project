@@ -1,30 +1,24 @@
 require('dotenv').config();
-const express = require('express');
+const express  = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
+const cors     = require('cors');
+const path     = require('path');
 
-// Import DB connection function and router
-const connectDB = require('./config/dbConn');
-const statesRouter = require('./routes/statesRouter');
+const connectDB     = require('./config/dbConn');
+const statesRouter  = require('./routes/statesRouter');
 
-const app = express();
+const app  = express();
 const PORT = process.env.PORT || 3500;
 
-// Connect to MongoDB
+// connect once at startup
 connectDB();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Serve static HTML (optional: if you have a 'public' folder)
 app.use('/', express.static(path.join(__dirname, 'public')));
-
-// API routes
 app.use('/states', statesRouter);
 
-// Catch-all 404
+// 404 handler
 app.all('*', (req, res) => {
   if (req.accepts('html')) {
     res.status(404).send('<h1>404 Not Found</h1>');
@@ -35,7 +29,13 @@ app.all('*', (req, res) => {
   }
 });
 
-// MongoDB event listeners
+// GLOBAL 500 handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ message: 'Internal Server Error' });
+});
+
+// only start listening once Mongo is open
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
