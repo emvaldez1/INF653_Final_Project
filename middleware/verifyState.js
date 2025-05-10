@@ -1,20 +1,24 @@
+// middleware/verifyState.js
 const statesData = require('../models/statesData.json');
 
 const verifyState = (req, res, next) => {
   const input = req.params.state;
   if (!input) {
-    return res.status(400).json({ message: 'State abbreviation is required' });
+    return res
+      .status(404)
+      .json({ message: 'State abbreviation is required' });
   }
 
   const code = input.toUpperCase();
-  const foundState = statesData.find(state => state.code === code);
-
-  if (!foundState) {
-    return res.status(400).json({ message: 'Invalid state abbreviation parameter' });
+  const found = statesData.find(s => s.code === code);
+  if (!found) {
+    return res
+      .status(404)
+      .json({ message: 'Invalid state abbreviation parameter' });
   }
 
   req.code = code;
-  req.fullStateData = foundState; // optionally pass full data if needed in controllers
+  req.fullStateData = found;
   next();
 };
 

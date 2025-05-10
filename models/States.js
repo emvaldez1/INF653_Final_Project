@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-const stateSchema = new Schema({
+const stateSchema = new mongoose.Schema({
   stateCode: {
     type: String,
     required: true,
+    uppercase: true,
     unique: true
   },
   funfacts: [String]
