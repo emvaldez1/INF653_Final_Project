@@ -67,4 +67,3 @@ const seedFunFacts = async () => {
 };
 
 seedFunFacts();
-
