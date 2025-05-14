@@ -16,25 +16,51 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Root endpoint – return a full HTML document
+app.get('/', (req, res) => {
+  res.type('html').send(`
+    <!DOCTYPE html>
+    <html>
+      <hd>
+        <meta charset="utf-8">
+        <title>States API</title>
+      </head>
+      <body>
+        <h1>Welcome to the States API</h1>
+      </body>
+    </html>
+  `);
+});
+
 // Serve static files
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 // States API routes
 app.use('/states', statesRouter);
 
-// 404 Not Found handler
+// 404 Not Found handler – return HTML when client wants HTML
 app.all('*', (req, res) => {
   if (req.accepts('html')) {
-    res.status(404).send('<h1>404 Not Found</h1>');
+    res.status(404).type('html').send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>404 Not Found</title>
+        </head>
+        <body>
+          <h1>404 Not Found</h1>
+        </body>
+      </html>
+    `);
   } else if (req.accepts('json')) {
--    res.status(404).json({ message: '404 Not Found' });
-+    res.status(404).json({ error: '404 Not Found' });
+    res.status(404).json({ message: '404 Not Found' });
   } else {
     res.status(404).type('txt').send('404 Not Found');
   }
 });
 
-// Global error handler (500 Internal Server Error)
+// Global error handler (500)
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ message: 'Internal Server Error' });
